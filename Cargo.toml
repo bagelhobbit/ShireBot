@@ -1,0 +1,12 @@
+[package]
+name = "discord_test"
+version = "0.1.0"
+authors = ["bagelhobbit <evanturner45@gmail.com>"]
+
+[dependencies]
+typemap = "0.3"
+
+[dependencies.serenity]
+version = "0.4"
+default-features=true
+features = ["framework", "standard_framework"]
