@@ -16,6 +16,7 @@ command!(join(ctx, msg) {
     let connect_to = match channel {
         Some(id) => id,
         None => {
+            let _ = msg.channel_id.say("You need to join a voice channel first");
             return Ok(()); 
         }
     };

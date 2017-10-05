@@ -6,9 +6,6 @@ mod commands;
 use serenity::prelude::*;
 use serenity::model::*;
 use serenity::framework::standard::{DispatchError, StandardFramework, help_commands};
-use serenity::utils::MessageBuilder;
-use serenity::Result as SerenityResult;
-use serenity::voice;
 use std::env;
 
 struct Handler;
@@ -46,79 +43,34 @@ fn main() {
             if let DispatchError::RateLimited(seconds) = error {
                 let _ = msg.channel_id.say(&format!("Try this again in {} seconds.", seconds));
             }
-        })
-        // Can't be used more that once per 5 seconds
-        .simple_bucket("emoji", 5)
-        // Can't be used more than 2 times per 30 seconds, with a 5 second delay
-        .bucket("complicated", 5, 30, 2) 
+        }) 
         .group("Meta", |g| g
             .command("about", |c| c.exec(commands::meta::about))
             .command("ping", |c| c.exec(commands::meta::ping))
             .command("help", |c| c.exec_help(help_commands::plain)))
         .group("Emoji", |g| g 
-            .prefix("emoji")
             .command("cat", |c| c 
                 .exec_str(":cat:")
-                .desc("Sends an emoji with a cat.")
-                .bucket("emoji"))
+                .desc("Sends a cat emoji."))
             .command("dog", |c| c 
                 .exec_str(":dog:")
-                .desc("Sends an emoji with a dog.")
-                .bucket("emoji")))
+                .desc("Sends a dog emoji.")))
         .group("Voice", |g| g 
-            .command("join", |c| c.exec(commands::voice::join))
+            .command("join", |c| c
+                .exec(commands::voice::join)
+                .desc("Bot will join the user's current voice channel"))
             .command("leave", |c| c.exec(commands::voice::leave)))
         .command("multiply", |c| c 
-            .exec(multiply)
+            .exec(commands::multiply)
             .known_as("*")
             .num_args(2)
-            .desc("multiplies two numbers")
+            .desc("Multiplies two numbers")
             .example("1.3 4"))
-        .command("love", |c| c.exec(love)),
+        .command("love", |c| c
+            .exec(commands::love)
+            .desc("Sends a message to you or a friend")
+            .usage("<@friend>")),
     );
 
     let _ = client.start().map_err(|why| println!("Client ended: {:?}", why));
-}
-
-command!(multiply(_ctx, msg, args) {
-    let mut valid = true;
-    // Parse both arguments at the same time. 
-    // If we don't get back results from both arguments then we don't care what either one is. 
-    let (first, second) = match (args.single::<f64>(), args.single::<f64>()) {
-        (Ok(x), Ok(y))=> (x, y),
-        (_, _) => {
-            valid = false;
-            (-1.0, -1.0)
-        },
-    };
-
-    if !valid {
-        check_msg(msg.channel_id.say(&format!("Please enter two numbers")));
-    } else {
-        let res = first * second;
-
-        check_msg(msg.channel_id.say(&res.to_string()));
-    }
-});
-
-command!(love(_ctx, msg, _args) {
-    let mut target = msg.author.clone();
-
-    if msg.mentions.len() >= 1 {
-        target = msg.mentions[0].clone();
-    }
-
-    let response = MessageBuilder::new()
-        .push("I love you ")
-        .mention(target)
-        .push("!")
-        .build();
-
-    check_msg(msg.channel_id.say(&response));
-});
-
-fn check_msg(result: SerenityResult<Message>) {
-    if let Err(why) = result {
-        println!("Error sending message: {:?}", why);
-    }
 }
