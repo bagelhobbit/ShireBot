@@ -54,3 +54,36 @@ command!(leave(ctx, msg) {
         let _ = msg.channel_id.say("Not in a voice channel");
     }
 });
+
+use serenity::voice;
+
+command!(play(ctx, msg) {
+    let guild_id = match msg.guild_id() {
+        Some(id) => id,
+        None => {
+            let _ = msg.channel_id.say("Error finding guild id");
+            return Ok(());
+        }
+    };
+
+    let airhorn_sound = ".\\audio\\airhorn.dca";
+
+    if let Some(handler) = ctx.shard.lock().manager.get(guild_id) {
+        let source = match voice::dca(airhorn_sound) {
+            Ok(source) => source,
+            Err(why) => {
+                println!("Err starting source: {:?}", why);
+
+                let _ = msg.channel_id.say("Couldn't find file");
+
+                return Ok(());
+            },
+        };
+
+        handler.play(source);
+
+        let _ = msg.channel_id.say("Playing");
+    } else {
+        let _ = msg.channel_id.say("Not in a voice channel");
+    }
+});
