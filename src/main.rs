@@ -59,7 +59,8 @@ fn main() {
             .command("join", |c| c
                 .exec(commands::voice::join)
                 .desc("Bot will join the user's current voice channel"))
-            .command("leave", |c| c.exec(commands::voice::leave)))
+            .command("leave", |c| c.exec(commands::voice::leave))
+            .command("play", |c| c.exec(commands::voice::play)))
         .command("multiply", |c| c 
             .exec(commands::multiply)
             .known_as("*")
