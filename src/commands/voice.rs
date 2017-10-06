@@ -1,16 +1,15 @@
 use serenity::model::Mentionable;
 
 command!(join(ctx, msg) {
-
-    let mut channel = None;
-
-    if let Some(guild) = msg.guild() {
+    let channel = msg.guild().and_then(|guild| {
+        let mut result = None;
         for (_, vs) in guild.read().unwrap().voice_states.iter() {
             if msg.author.id == vs.user_id {
-                channel = vs.channel_id;
+                result = vs.channel_id;
             }
         }
-    };
+        result
+    });
 
     let connect_to = match channel {
         Some(id) => id,
