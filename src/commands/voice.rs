@@ -1,4 +1,3 @@
-use serenity::client::CACHE;
 use serenity::model::Mentionable;
 
 command!(join(ctx, msg) {
@@ -21,12 +20,12 @@ command!(join(ctx, msg) {
         }
     };
 
-    let guild_id = match CACHE.read().unwrap().guild_channel(msg.channel_id) {
-        Some(channel) => channel.read().unwrap().guild_id,
+    let guild_id = match msg.guild_id() {
+        Some(id) => id,
         None => {
             let _ = msg.channel_id.say("Groups and DMs not supported");
             return Ok(());
-        },
+        }
     };
 
     let mut shard = ctx.shard.lock();
@@ -36,12 +35,12 @@ command!(join(ctx, msg) {
 });
 
 command!(leave(ctx, msg) {
-    let guild_id = match CACHE.read().unwrap().guild_channel(msg.channel_id) {
-        Some(channel) => channel.read().unwrap().guild_id,
+    let guild_id = match msg.guild_id() {
+        Some(id) => id,
         None => {
-            let _ = msg.channel_id.say("Groups and DMs are not supported");
+            let _ = msg.channel_id.say("Groups and DMs not supported");
             return Ok(());
-        },
+        }
     };
 
     let mut shard = ctx.shard.lock();
