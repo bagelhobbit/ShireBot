@@ -4,10 +4,16 @@ use serenity::voice;
 use std::{thread, time};
 
 command!(join(ctx, msg) {
+    let mut target = msg.author.id;
+
+    if msg.mentions.len() >= 1 {
+        target = msg.mentions[0].id;
+    }
+
     let channel = msg.guild().and_then(|guild| {
         let mut result = None;
         for (_, vs) in guild.read().unwrap().voice_states.iter() {
-            if msg.author.id == vs.user_id {
+            if target == vs.user_id {
                 result = vs.channel_id;
             }
         }
