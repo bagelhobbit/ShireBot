@@ -14,7 +14,6 @@ impl EventHandler for Handler {
     fn on_ready(&self, _: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
     }
-
 }
 
 fn main() {
@@ -43,7 +42,8 @@ fn main() {
             if let DispatchError::RateLimited(seconds) = error {
                 let _ = msg.channel_id.say(&format!("Try this again in {} seconds.", seconds));
             }
-        }) 
+        })
+        .simple_bucket("voice", 5) 
         .group("Meta", |g| g
             .command("about", |c| c.exec(commands::meta::about))
             .command("ping", |c| c.exec(commands::meta::ping))
@@ -60,7 +60,12 @@ fn main() {
                 .exec(commands::voice::join)
                 .desc("Bot will join the user's current voice channel"))
             .command("leave", |c| c.exec(commands::voice::leave))
-            .command("play", |c| c.exec(commands::voice::play)))
+            .command("play", |c| c
+                .exec(commands::voice::play)
+                .bucket("voice"))
+            .command("airhorn", |c| c
+                .exec(commands::voice::airhorn)
+                .bucket("voice")))
         .command("multiply", |c| c 
             .exec(commands::multiply)
             .known_as("*")
