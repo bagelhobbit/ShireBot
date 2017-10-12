@@ -58,20 +58,22 @@ fn main() {
         .group("Voice", |g| g 
             .command("join", |c| c
                 .exec(commands::voice::join)
-                .desc("Bot will join the user's current voice channel"))
+                .desc("Bot will join the user's current voice channel."))
             .command("leave", |c| c.exec(commands::voice::leave))
             .command("play", |c| c.exec(commands::voice::play)))
         .command("multiply", |c| c 
             .exec(commands::multiply)
             .known_as("*")
             .num_args(2)
-            .desc("Multiplies two numbers")
+            .desc("Multiplies two numbers.")
             .example("1.3 4"))
         .command("love", |c| c
             .exec(commands::love)
-            .desc("Sends a message to you or a friend")
+            .desc("Sends a message to you or a friend.")
             .usage("<@friend>"))
-        .command("playing", |c| c.exec(commands::notify)),
+        .command("playing", |c| c
+            .exec(commands::notify)
+            .desc("Notify everyone what you're playing and invite them to join.")),
     );
 
     let _ = client.start().map_err(|why| println!("Client ended: {:?}", why));
