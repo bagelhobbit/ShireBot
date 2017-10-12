@@ -70,7 +70,8 @@ fn main() {
         .command("love", |c| c
             .exec(commands::love)
             .desc("Sends a message to you or a friend")
-            .usage("<@friend>")),
+            .usage("<@friend>"))
+        .command("playing", |c| c.exec(commands::notify)),
     );
 
     let _ = client.start().map_err(|why| println!("Client ended: {:?}", why));

@@ -39,3 +39,17 @@ command!(love(_ctx, msg, _args) {
 
     let _ = msg.channel_id.say(&response);
 });
+
+command!(notify(_ctx, msg, args) {
+    let message = args.full();
+
+    let response = MessageBuilder::new()
+        .push("@everyone ")
+        .mention(msg.author.clone())
+        .push(" is playing ")
+        .push_mono(message)
+        .push(". Feel free to join!")
+        .build();
+
+    let _ = msg.channel_id.say(&response);
+});
