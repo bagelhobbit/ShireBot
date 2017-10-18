@@ -65,6 +65,9 @@ fn main() {
                 .bucket("voice"))
             .command("airhorn", |c| c
                 .exec(commands::voice::airhorn)
+                .bucket("voice"))
+            .command("patrick", |c| c
+                .exec(commands::voice::patrick)
                 .bucket("voice")))
         .command("multiply", |c| c 
             .exec(commands::multiply)

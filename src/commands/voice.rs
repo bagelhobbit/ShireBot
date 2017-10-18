@@ -101,3 +101,7 @@ command!(play(ctx, msg, args) {
 command!(airhorn(ctx, msg, _args) {
     let _ = play(ctx, msg, Args::new(".\\audio\\airhorn.dca", ","));
 });
+
+command!(patrick(ctx, msg, _args) {
+    let _ = play(ctx, msg, Args::new(".\\audio\\patrick.dca", ","));
+});
