@@ -1,10 +1,19 @@
-use serenity::model::Mentionable;
+use serenity::prelude::*;
+use serenity::framework::standard::Args;
+use serenity::voice;
+use std::collections::HashMap;
 
 command!(join(ctx, msg) {
+    let mut target = msg.author.id;
+
+    if msg.mentions.len() >= 1 {
+        target = msg.mentions[0].id;
+    }
+
     let channel = msg.guild().and_then(|guild| {
         let mut result = None;
         for (_, vs) in guild.read().unwrap().voice_states.iter() {
-            if msg.author.id == vs.user_id {
+            if target == vs.user_id {
                 result = vs.channel_id;
             }
         }
@@ -53,9 +62,12 @@ command!(leave(ctx, msg) {
     }
 });
 
-use serenity::voice;
+command!(play(ctx, msg, args) {
+    let sounds: HashMap<&str, &str> = 
+        [("airhorn", ".\\audio\\airhorn.dca"),
+         ("patrick", ".\\audio\\patrick.dca")]
+         .iter().cloned().collect();
 
-command!(play(ctx, msg) {
     let guild_id = match msg.guild_id() {
         Some(id) => id,
         None => {
@@ -64,10 +76,22 @@ command!(play(ctx, msg) {
         }
     };
 
-    let airhorn_sound = ".\\audio\\airhorn.dca";
+    let sound = match args.get(0) {
+        Some(sound) => sound,
+        None => "airhorn",
+    };
+
+    let path = match sounds.get(sound) {
+        Some(path) => path,
+        None => {
+            let _ = msg.channel_id.say("Couldn't find file");
+            return Ok(());
+        },
+    };
+
 
     if let Some(handler) = ctx.shard.lock().manager.get(guild_id) {
-        let source = match voice::dca(airhorn_sound) {
+        let source = match voice::dca(path) {
             Ok(source) => source,
             Err(why) => {
                 println!("Err starting source: {:?}", why);
@@ -84,4 +108,12 @@ command!(play(ctx, msg) {
     } else {
         let _ = msg.channel_id.say("Not in a voice channel");
     }
+});
+
+command!(airhorn(ctx, msg, _args) {
+    let _ = play(ctx, msg, Args::new("airhorn", ","));
+});
+
+command!(patrick(ctx, msg, _args) {
+    let _ = play(ctx, msg, Args::new("patrick", ","));
 });
