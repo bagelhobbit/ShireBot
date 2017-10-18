@@ -1,6 +1,7 @@
 use serenity::prelude::*;
 use serenity::framework::standard::Args;
 use serenity::voice;
+use std::collections::HashMap;
 
 command!(join(ctx, msg) {
     let mut target = msg.author.id;
@@ -62,6 +63,11 @@ command!(leave(ctx, msg) {
 });
 
 command!(play(ctx, msg, args) {
+    let sounds: HashMap<&str, &str> = 
+        [("airhorn", ".\\audio\\airhorn.dca"),
+         ("patrick", ".\\audio\\patrick.dca")]
+         .iter().cloned().collect();
+
     let guild_id = match msg.guild_id() {
         Some(id) => id,
         None => {
@@ -70,11 +76,17 @@ command!(play(ctx, msg, args) {
         }
     };
 
-    let default_path = ".\\audio\\airhorn.dca";
+    let sound = match args.get(0) {
+        Some(sound) => sound,
+        None => "airhorn",
+    };
 
-    let path = match args.get(0) {
+    let path = match sounds.get(sound) {
         Some(path) => path,
-        None => default_path,
+        None => {
+            let _ = msg.channel_id.say("Couldn't find file");
+            return Ok(());
+        },
     };
 
 
@@ -99,9 +111,9 @@ command!(play(ctx, msg, args) {
 });
 
 command!(airhorn(ctx, msg, _args) {
-    let _ = play(ctx, msg, Args::new(".\\audio\\airhorn.dca", ","));
+    let _ = play(ctx, msg, Args::new("airhorn", ","));
 });
 
 command!(patrick(ctx, msg, _args) {
-    let _ = play(ctx, msg, Args::new(".\\audio\\patrick.dca", ","));
+    let _ = play(ctx, msg, Args::new("patrick", ","));
 });
