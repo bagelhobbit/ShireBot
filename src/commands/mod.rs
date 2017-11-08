@@ -41,7 +41,13 @@ command!(love(_ctx, msg, _args) {
 });
 
 command!(notify(_ctx, msg, args) {
-    let message = args.full();
+    let mut message = args.full();
+
+    if message == "" {
+        message = String::from("something");
+    }
+
+    let _ = msg.channel_id.delete_message(msg.id);
 
     let response = MessageBuilder::new()
         .push("@everyone ")
@@ -52,4 +58,5 @@ command!(notify(_ctx, msg, args) {
         .build();
 
     let _ = msg.channel_id.say(&response);
+
 });
