@@ -15,6 +15,10 @@ Add Go and ffmpeg `/bin` directories to your system path.
 dca should now be built in `%USERPROFILE%/go/bin`
 
 ## Example usage
+
+Don't user powershell to run `dca.exe` as this will mess with the file encoding.
+Using [Mysy2](http://www.msys2.org/) is recommended.
+
 `dca.exe in.wav > out.dca`
 
 Input file can also be piped to dca.exe.
