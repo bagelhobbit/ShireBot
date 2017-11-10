@@ -10,9 +10,12 @@ use std::env;
 
 struct Handler;
 
+const DEFAULT_STATUS: &'static str = "~help";
+
 impl EventHandler for Handler {
-    fn on_ready(&self, _: Context, ready: Ready) {
+    fn on_ready(&self, ctx: Context, ready: Ready) {
         println!("{} is connected!", ready.user.name);
+        ctx.set_game_name(DEFAULT_STATUS);
     }
 }
 
@@ -47,7 +50,10 @@ fn main() {
         .group("Meta", |g| g
             .command("about", |c| c.exec(commands::meta::about))
             .command("ping", |c| c.exec(commands::meta::ping))
-            .command("help", |c| c.exec_help(help_commands::plain)))
+            .command("help", |c| c.exec_help(help_commands::plain))
+            .command("setgame", |c| c
+                .exec(commands::meta::setgame)
+                .required_permissions(Permissions::ADMINISTRATOR)))
         .group("Emoji", |g| g 
             .command("cat", |c| c 
                 .exec_str(":cat:")
